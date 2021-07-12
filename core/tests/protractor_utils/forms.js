@@ -643,6 +643,7 @@ var CodeMirrorChecker = function(elem, codeMirrorPaneToScroll) {
       for (var i = 0; i < totalCount; i++) {
         var lineNumberElement = await lineNumberElements.get(i);
         var lineNumber = await lineNumberElement.getText();
+        console.log(lineNumber);
         if (lineNumber && !compareDict.hasOwnProperty(lineNumber)) {
           throw new Error('Line ' + lineNumber + ' not found in CodeMirror');
         }
