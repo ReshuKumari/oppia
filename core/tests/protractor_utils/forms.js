@@ -639,6 +639,7 @@ var CodeMirrorChecker = function(elem, codeMirrorPaneToScroll) {
       var lineDivElements = elem.all(by.xpath('./div'));
       var lineContentElements = elem.all(by.css('.CodeMirror-line'));
       var lineNumberElements = elem.all(by.css('.CodeMirror-linenumber'));
+      console.log(lineNumberElements);
       var totalCount = await lineNumberElements.count();
       for (var i = 0; i < totalCount; i++) {
         var lineNumberElement = await lineNumberElements.get(i);
