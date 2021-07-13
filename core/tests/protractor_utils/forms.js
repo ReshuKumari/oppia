@@ -652,6 +652,7 @@ var CodeMirrorChecker = function(elem, codeMirrorPaneToScroll) {
         var isHighlighted = await lineDivElement.element(
           by.css('.CodeMirror-linebackground')).isPresent();
         var text = await lineElement.getText();
+        console.log(text);
         actualDiffDict[lineNumber] = {
           text: text,
           highlighted: isHighlighted
@@ -660,6 +661,10 @@ var CodeMirrorChecker = function(elem, codeMirrorPaneToScroll) {
       scrollTo = scrollTo + lineHeight * NUMBER_OF_LINES_TO_SCROLL;
     }
     for (var lineNumber in compareDict) {
+      console.log('actual Dict');
+      console.log(actualDiffDict[lineNumber].text);
+      console.log('Compare Dict');
+      console.log(compareDict[lineNumber].text);
       expect(actualDiffDict[lineNumber].text).toEqual(
         compareDict[lineNumber].text);
       if (compareHightlighting) {
