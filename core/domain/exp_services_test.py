@@ -4213,9 +4213,13 @@ class ExplorationSnapshotUnitTests(ExplorationServicesUnitTests):
             self.EXP_0_ID, self.owner_id)
 
         # Upgrade to version 2.
-        exploration.title = 'First title'
-        exp_services._save_exploration(  # pylint: disable=protected-access
-            self.owner_id, exploration, 'Changed title.', [])
+        exp_services.update_exploration(
+            self.owner_id, self.EXP_0_ID, [exp_domain.ExplorationChange({
+                'cmd': exp_domain.CMD_EDIT_EXPLORATION_PROPERTY,
+                'property_name': 'title',
+                'old_value': 'A title',
+                'new_value': 'new title'
+            })], 'Changed title.')
 
         # Change list for version 3.
         change_list = [exp_domain.ExplorationChange({
@@ -4289,13 +4293,13 @@ class ExplorationSnapshotUnitTests(ExplorationServicesUnitTests):
         with self.assertRaisesRegexp(
             Exception,
             'Unexpected error: Trying to find change list from version %s '
-            'of exploration to version %s. Please reload and try again.'
+            'of exploration to version %s.'
             % (4, 1)):
             exp_services.get_composite_change_list(
                 self.EXP_0_ID, 4, 1)
 
         composite_change_list = exp_services.get_composite_change_list(
-            self.EXP_0_ID, 1, 4)
+            self.EXP_0_ID, 2, 4)
         composite_change_list_dict = [change.to_dict()
                                       for change in composite_change_list]
         self.assertEqual(
@@ -5764,6 +5768,48 @@ title: Old Title
         exploration = exp_fetchers.get_exploration_by_id(self.NEW_EXP_ID)
         self.assertEqual(exploration.title, 'new title')
 
+        # Check that the property can be changed when working
+        # on old version.
+        # Add change to upgrade the version.
+        exp_services.update_exploration(
+            self.albert_id, self.NEW_EXP_ID, [exp_domain.ExplorationChange({
+                'cmd': exp_domain.CMD_EDIT_EXPLORATION_PROPERTY,
+                'property_name': 'title',
+                'new_value': 'new title'
+            })], 'Changed title.')
+
+        hint_dict = {
+            'hint_content': {
+                'content_id': 'hint_1',
+                'html': (
+                    '<p>Hello, this is html1 for state2'
+                    '<oppia-noninteractive-image filepath-with-value="'
+                    '&amp;quot;s2Hint1.png&amp;quot;" caption-with-value='
+                    '"&amp;quot;&amp;quot;" alt-with-value='
+                    '"&amp;quot;&amp;quot;"></oppia-noninteractive-image>'
+                    '</p>')
+            }
+        }
+
+        change_list = [exp_domain.ExplorationChange({
+            'cmd': exp_domain.CMD_EDIT_STATE_PROPERTY,
+            'property_name': exp_domain.STATE_PROPERTY_INTERACTION_HINTS,
+            'state_name': exploration.init_state_name,
+            'new_value': hint_dict
+        })]
+        changes_are_mergeable = exp_services.are_changes_mergeable(
+            self.NEW_EXP_ID, 1, change_list)
+        self.assertTrue(changes_are_mergeable)
+        with self.assertRaisesRegexp(
+            Exception, 'Expected hints_list to be a list.*'):
+            exp_services.update_exploration(
+                self.albert_id, self.NEW_EXP_ID, change_list,
+                'Changed hints.')
+
+        # Assert that final version consists all the changes.
+        exploration = exp_fetchers.get_exploration_by_id(self.NEW_EXP_ID)
+        self.assertEqual(exploration.title, 'new title')
+
     def test_update_interaction_solutions(self):
         exploration = exp_fetchers.get_exploration_by_id(self.NEW_EXP_ID)
         self.assertIsNone(exploration.init_state.interaction.solution)
@@ -6261,6 +6307,7 @@ class ApplyDraftUnitTests(test_utils.GenericTestBase):
         self.assertEqual(
             param_changes._customization_args,  # pylint: disable=protected-access
             {'list_of_values': ['1', '2'], 'parse_with_jinja': False})
+<<<<<<< HEAD
 
 
 class ExplorationChangesMergeabilityUnitTests(
@@ -11923,3 +11970,5 @@ class ExplorationChangesMergeabilityUnitTests(
             self.assertEqual(
                 expected_email_html_body_2,
                 messages[1].html.decode())
+=======
+>>>>>>> upstream/develop

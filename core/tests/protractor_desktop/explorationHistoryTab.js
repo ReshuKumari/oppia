@@ -575,6 +575,7 @@ describe('Exploration history', function() {
     await historyGraph.expectHistoryStatesToMatch(expectedHistoryStates);
     console.log('test 1');
     console.log(historyGraph.expectHistoryStatesToMatch(expectedHistoryStates));
+    console.log('1.1');
     await historyGraph.expectNumberOfLinksToMatch(2, 2, 0);
 
     // Check deleting a state.
