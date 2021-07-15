@@ -636,10 +636,12 @@ var CodeMirrorChecker = function(elem, codeMirrorPaneToScroll) {
       var lineDivElements = elem.all(by.xpath('./div'));
       var lineContentElements = elem.all(by.css('.CodeMirror-line'));
       var lineNumberElements = elem.all(by.css('.CodeMirror-linenumber'));
+      console.log(lineNumberElements);
       var totalCount = await lineNumberElements.count();
       for (var i = 0; i < totalCount; i++) {
         var lineNumberElement = await lineNumberElements.get(i);
         var lineNumber = await lineNumberElement.getText();
+        console.log(lineNumber);
         if (lineNumber && !compareDict.hasOwnProperty(lineNumber)) {
           throw new Error('Line ' + lineNumber + ' not found in CodeMirror');
         }
@@ -648,6 +650,7 @@ var CodeMirrorChecker = function(elem, codeMirrorPaneToScroll) {
         var isHighlighted = await lineDivElement.element(
           by.css('.CodeMirror-linebackground')).isPresent();
         var text = await lineElement.getText();
+        console.log(text);
         actualDiffDict[lineNumber] = {
           text: text,
           highlighted: isHighlighted
@@ -656,6 +659,10 @@ var CodeMirrorChecker = function(elem, codeMirrorPaneToScroll) {
       scrollTo = scrollTo + lineHeight * NUMBER_OF_LINES_TO_SCROLL;
     }
     for (var lineNumber in compareDict) {
+      console.log('actual Dict');
+      console.log(actualDiffDict[lineNumber].text);
+      console.log('Compare Dict');
+      console.log(compareDict[lineNumber].text);
       expect(actualDiffDict[lineNumber].text).toEqual(
         compareDict[lineNumber].text);
       if (compareHightlighting) {
